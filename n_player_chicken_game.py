@@ -1,5 +1,5 @@
 import dataclasses
-from typing import List, Callable, Union
+from typing import List, Callable
 from Players.base_player import BasePlayer
 from Mediators.mediator_base import MediatorBase
 import numpy as np
@@ -12,8 +12,8 @@ ACTIONS = [SWERVE, STAY]
 
 @dataclasses.dataclass
 class RoundHistory:
-    action: Union[SWERVE, STAY]
-    recommendation: Union[SWERVE, STAY]
+    action: int
+    recommendation: int
 
 
 def compute_payoffs(actions: List[int]) -> List[float]:
