@@ -25,7 +25,9 @@ def run(num_players, k):
 
     game_controller = NPlayerChickenGame(players, mediator)
 
-    for i in range(3):
+    game_controller.play_round_series(20000)
+
+    for i in range(4):
         game_controller.play_round_series(rounds=5000)
         game_controller.log_unfollowed_players(last_rounds=5000, threshold=10)
 

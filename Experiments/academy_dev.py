@@ -28,11 +28,11 @@ def save_players(players):
 
 
 def create_two_faced_mixer_players(n):
-    return [create_two_faced_mixer_player(i)
+    return [create_two_faced_mixer_with_mutual_policy(i)
             for i in range(n)]
 
 
-def create_two_faced_mixer_player(i):
+def create_two_faced_mixer_with_mutual_policy(i):
     mutual_policy = QLearningPlayer(f'QL mutual {i}', temperature=1)
     player1 = MixerPlayer(
         f'Mixer 1 {i}',
@@ -54,9 +54,9 @@ def create_two_faced_mixer_player(i):
                           swerve_face=player2)
 
 
-def create_mixer_player(name):
-    policies = [QLearningPlayer(f'QL {i}', temperature=1) for i in range(3)]
-    return MixerPlayer(name, policies, temperature=1)
+def create_mixer_player(idx):
+    policies = [QLearningPlayer(f'QL {idx} {i}', temperature=1) for i in range(3)]
+    return MixerPlayer(f'Mixer {idx}', policies, temperature=1)
 
 
 def create_two_faced_players(number):

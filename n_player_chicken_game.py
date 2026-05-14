@@ -74,20 +74,18 @@ class NPlayerChickenGame:
 
         self.mediator.update_strategy(actions)
 
-        int_payoffs = list(map(int, payoffs))
         deviated = sum(1 for i in range(self.n)
                        if actions[i] != recommendations[i])
         if log:
-            logging.info('\n'
-                         f'        {actions=}\n'
-                         f'{recommendations=}\n'
-                         f'{int_payoffs=}\n'
+            logging.info(f'Max payoff: {max(payoffs):.4f}'
+                         f' | Min payoff: {min(payoffs):.4f}\n'
                          f'Number of deviated: {deviated}'
                          )
 
         return actions, payoffs, recommendations
 
     def play_round_series(self, rounds):
+        self.history = [[] for _ in range(self.n)]
         logging.info('Start round series')
 
         for _ in range(max(0, rounds - 100)):
