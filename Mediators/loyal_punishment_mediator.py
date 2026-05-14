@@ -2,8 +2,10 @@ from chicken_game import STAY, SWERVE
 import numpy as np
 import logging
 
+from .mediator_base import MediatorBase
 
-class LoyalPunishmentMediator:
+
+class LoyalPunishmentMediator(MediatorBase):
     def __init__(self, num_players, k=2, threshold=0.5, discount=0.9):
         """
         :param num_players: Number of players in the game

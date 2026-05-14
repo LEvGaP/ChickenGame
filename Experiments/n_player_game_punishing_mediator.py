@@ -1,7 +1,4 @@
-import logging
-
 from Utils.mixer_player_storage_manager import PlayersStorageManager
-from mediators import PunishingMediatorV2
 from n_player_chicken_game import NPlayerChickenGame
 from Players.base_player import BasePlayer
 from Mediators.loyal_punishment_mediator import LoyalPunishmentMediator

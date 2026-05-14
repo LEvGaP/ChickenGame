@@ -1,5 +1,5 @@
 from Players.q_learning_player import QLearningPlayerV2
-from mediators import RandomMediatorV2
+from Mediators.mediators import RandomMediatorV2
 from chicken_game import ChickenGame
 
 

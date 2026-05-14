@@ -1,7 +1,7 @@
 from chicken_game import ChickenGame
 from Players.q_learning_player import QLearningPlayer
 from Players.mixer_player import MixerPlayer
-from mediators import RandomMediatorV2
+from Mediators.mediators import RandomMediatorV2
 
 
 def create_mixer_player(name):

@@ -1,4 +1,4 @@
-from mediators import SequenceMediator
+from Mediators.mediators import SequenceMediator
 from chicken_game import ChickenGame, RoundHistory
 from Players.mixer_player import MixerPlayer
 from Players.base_player import BasePlayer

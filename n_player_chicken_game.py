@@ -1,7 +1,7 @@
 import dataclasses
-from typing import List, Callable, Union, Any
+from typing import List, Callable, Union
 from Players.base_player import BasePlayer
-from mediators import PunishingMediatorV2
+from Mediators.mediator_base import MediatorBase
 import numpy as np
 import logging
 
@@ -39,7 +39,7 @@ def compute_payoffs(actions: List[int]) -> List[float]:
 class NPlayerChickenGame:
     def __init__(self,
                  players: List[BasePlayer],
-                 mediator: PunishingMediatorV2,
+                 mediator: MediatorBase,
                  payoff_function: Callable = compute_payoffs):
         self.players = players
         self.n = len(players)

@@ -2,7 +2,7 @@ from chicken_game import ChickenGame
 from Players.q_learning_player import QLearningPlayer
 from Players.mixer_player import MixerPlayer
 from Players.sophistic_player import SophisticPlayer
-from mediators import RandomMediatorV2, SequenceMediator
+from Mediators.mediators import SequenceMediator
 
 
 def create_mixer_player(name):
