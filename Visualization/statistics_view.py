@@ -48,7 +48,7 @@ class StatisticsView:
     ) -> None:
         ax.plot(rounds, ratings, color="#1f77b4", linewidth=1, label="Loyal rating")
         ax.set_ylabel("Loyal rating")
-        ax.set_ylim(0.05)
+        ax.set_ylim(top=0.05)
         ax.set_title("Loyal rating")
         ax.grid(True, alpha=0.3)
 
@@ -74,6 +74,7 @@ class StatisticsView:
             label="Avg player payoff",
         )
         ax.set_ylabel("Avg player payoff")
+        ax.set_ylim(bottom=-10)
         ax.set_title("Avg payoffs")
         ax.grid(True, alpha=0.3)
         ax.legend(loc="upper right")
