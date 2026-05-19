@@ -1,6 +1,8 @@
 from Utils.mixer_player_storage_manager import PlayersStorageManager
+from Utils.statistics_collector import StatisticsCollector
 from pathlib import Path
 from Visualization.game_history_grid import GameHistoryGridView
+from Visualization.loyal_rating_chart import LoyalRatingChartView
 from Mediators.loyal_punishment_mediator import LoyalPunishmentMediator
 from n_player_chicken_game import NPlayerChickenGame
 
@@ -12,16 +14,26 @@ def run(n_players, k):
     for p in players:
         p.update_temperature(factor=0.28)
 
-    mediator = LoyalPunishmentMediator(num_players=n_players, k=k,
-                                        threshold=0.0033,
-                                        discount=0.9)
+    threshold = 0.0033
+    statistics = StatisticsCollector()
+    mediator = LoyalPunishmentMediator(
+        num_players=n_players,
+        k=k,
+        threshold=threshold,
+        discount=0.9,
+        statistics_collector=statistics,
+    )
 
     game_controller = NPlayerChickenGame(players, mediator)
 
-    view = GameHistoryGridView(n_players)
-    for i in range(100):
-        actions, payoffs, recs = game_controller.play_round()
-        view.append_round(actions, recs)
+    game_controller.play_round_series(5000)
+
+    # view = GameHistoryGridView(n_players)
+    # for i in range(100):
+    #     actions, payoffs, recs = game_controller.play_round()
+    #     view.append_round(actions, recs)
 
     # view.pump()
-    view.run_mainloop()
+    # view.run_mainloop()
+
+    LoyalRatingChartView(statistics, threshold=threshold).show()
