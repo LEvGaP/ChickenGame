@@ -1,7 +1,8 @@
 import dataclasses
-from typing import List, Callable
+from typing import List, Callable, Optional
 from Players.base_player import BasePlayer
 from Mediators.mediator_base import MediatorBase
+from Utils.statistics_collector import StatisticsCollector
 import numpy as np
 import logging
 
@@ -40,13 +41,13 @@ class NPlayerChickenGame:
     def __init__(self,
                  players: List[BasePlayer],
                  mediator: MediatorBase,
-                 payoff_function: Callable = compute_payoffs):
+                 payoff_function: Callable = compute_payoffs,
+                 statistics_collector: Optional[StatisticsCollector] = None):
         self.players = players
         self.n = len(players)
         self.mediator = mediator
         self.payoff_function = payoff_function
-
-        self.history: List[List[RoundHistory]] = [[] for _ in range(self.n)]
+        self.statistics_collector = statistics_collector
 
         logging.info(f'Players number: {self.n}')
 
@@ -59,8 +60,6 @@ class NPlayerChickenGame:
         for i, player in enumerate(self.players):
             action = player.get_action(recommendations[i])
             actions.append(action)
-            # Record history
-            self.history[i].append(RoundHistory(action, recommendations[i]))
 
         # 3. Compute payoffs using the separate function
         payoffs = self.payoff_function(actions)
@@ -76,6 +75,11 @@ class NPlayerChickenGame:
 
         deviated = sum(1 for i in range(self.n)
                        if actions[i] != recommendations[i])
+        if self.statistics_collector is not None:
+            self.statistics_collector.record_round_stats(
+                avg_payoff=sum(payoffs) / self.n,
+                deviate_count=deviated,
+            )
         if log:
             logging.info(f'Max payoff: {max(payoffs):.4f}'
                          f' | Min payoff: {min(payoffs):.4f}\n'
@@ -85,7 +89,6 @@ class NPlayerChickenGame:
         return actions, payoffs, recommendations
 
     def play_round_series(self, rounds):
-        self.history = [[] for _ in range(self.n)]
         logging.info('Start round series')
 
         for _ in range(max(0, rounds - 100)):
@@ -99,34 +102,3 @@ class NPlayerChickenGame:
             self.play_round(log=True)
 
         logging.info('Finish round series')
-
-    def get_history(self, player_index: int) -> List[RoundHistory]:
-        """Return history for a specific player."""
-        return self.history[player_index]
-
-    def log_history_stats(self, player_index):
-        player_history = self.history[player_index]
-        unfollow_by_action = [0] * 2
-        follow_by_action = [0] * 2
-        for h in player_history:
-            if h.action != h.recommendation:
-                unfollow_by_action[h.action] += 1
-            else:
-                follow_by_action[h.action] += 1
-
-        logging.info(f'Player {player_index}'
-                     f' history statistics: {unfollow_by_action=},'
-                     f' {follow_by_action=}')
-
-    def log_unfollowed_players(self, last_rounds=5000, threshold=5):
-        for i in range(self.n):
-            history = self.history[i][-last_rounds:]
-            unfollowed_by_action = [0] * 2
-            for rh in history:
-                if rh.action != rh.recommendation:
-                    unfollowed_by_action[rh.action] += 1
-
-            if sum(unfollowed_by_action) > threshold:
-                player = self.players[i]
-                logging.info(f'{player.name}: {unfollowed_by_action=}')
-                player.log_parameters()

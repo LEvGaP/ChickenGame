@@ -26,7 +26,6 @@ def run(num_players, k):
 
     for i in range(4):
         game_controller.play_round_series(rounds=5000)
-        game_controller.log_unfollowed_players(last_rounds=5000, threshold=10)
 
     for p in players:
         p.log_parameters()

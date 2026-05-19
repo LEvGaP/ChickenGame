@@ -2,7 +2,7 @@ from Utils.mixer_player_storage_manager import PlayersStorageManager
 from Utils.statistics_collector import StatisticsCollector
 from pathlib import Path
 from Visualization.game_history_grid import GameHistoryGridView
-from Visualization.loyal_rating_chart import LoyalRatingChartView
+from Visualization.statistics_view import StatisticsView
 from Mediators.loyal_punishment_mediator import LoyalPunishmentMediator
 from n_player_chicken_game import NPlayerChickenGame
 
@@ -24,7 +24,9 @@ def run(n_players, k):
         statistics_collector=statistics,
     )
 
-    game_controller = NPlayerChickenGame(players, mediator)
+    game_controller = NPlayerChickenGame(
+        players, mediator, statistics_collector=statistics,
+    )
 
     game_controller.play_round_series(5000)
 
@@ -36,4 +38,4 @@ def run(n_players, k):
     # view.pump()
     # view.run_mainloop()
 
-    LoyalRatingChartView(statistics, threshold=threshold).show()
+    StatisticsView(statistics, threshold=threshold).show()
