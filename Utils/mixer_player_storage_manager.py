@@ -9,6 +9,8 @@ class PlayersStorageManager:
 
     def __init__(self, store_path: Path = Path('PlayersStorage'), clear=False):
         self.store_path = store_path
+        if not self.store_path.exists():
+            self.store_path.mkdir(parents=True)
 
         if clear:
             self.clear()

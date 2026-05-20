@@ -8,7 +8,7 @@ import logging
 
 from Utils.statistics_collector import StatisticsCollector
 
-from .mediator_base import MediatorBase
+from Mediators.mediator_base import MediatorBase
 
 
 class LoyalPunishmentMediator(MediatorBase):
@@ -97,8 +97,6 @@ class LoyalPunishmentMediator(MediatorBase):
         # 3. Handle Mode Switching
         if self.mode == "SEQUENTIAL":
             if self.loyal_rating > self.threshold:
-                logging.info('Start punishing')
-                logging.info(f'Disloyalty rating: {self.loyal_rating:.5f}')
                 self.mode = "PUNISHMENT"
                 # Reset punishment pool logic
                 np.random.shuffle(self.punishment_pool)
@@ -106,8 +104,6 @@ class LoyalPunishmentMediator(MediatorBase):
         else:
             # Currently in punishment
             if self.loyal_rating <= self.threshold:
-                logging.info('Stop punishing')
-                logging.info(f'Disloyalty rating: {self.loyal_rating:.5f}')
                 self.mode = "SEQUENTIAL"
 
     def __str__(self):

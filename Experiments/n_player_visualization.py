@@ -6,9 +6,13 @@ from Visualization.statistics_view import StatisticsView
 from Mediators.loyal_punishment_mediator import LoyalPunishmentMediator
 from n_player_chicken_game import NPlayerChickenGame
 
+STORE_PATH = Path('PlayersStorage', 'TwoFacedMixer25000')
+SAVE_PATH = Path('PlayersStorage', 'TwoFacedMixer40000')
+
+
 def run(n_players, k):
     storage_manager = PlayersStorageManager(
-        store_path=Path('PlayersStorage', 'TwoFacedMixerPlayers'))
+        store_path=STORE_PATH)
 
     players = storage_manager.load()[:n_players]
     for p in players:
@@ -28,7 +32,7 @@ def run(n_players, k):
         players, mediator, statistics_collector=statistics,
     )
 
-    game_controller.play_round_series(5000)
+    game_controller.play_round_series(15000)
 
     # view = GameHistoryGridView(n_players)
     # for i in range(100):
@@ -37,5 +41,9 @@ def run(n_players, k):
 
     # view.pump()
     # view.run_mainloop()
+
+    if SAVE_PATH:
+        storage_manager = PlayersStorageManager(store_path=SAVE_PATH)
+        storage_manager.dump_batch(players)
 
     StatisticsView(statistics, threshold=threshold).show()

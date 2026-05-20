@@ -26,6 +26,9 @@ def compute_payoffs(actions: List[int]) -> List[float]:
     n = len(actions)
     k = sum(actions)  # STAY = 1, so sum gives count of stayers
 
+    if k == 0:
+        return [0] * n
+
     swerve_payoff = n - np.log2(k + 1)
     stay_payoff = np.log2(n) - np.log2(k + 1) + (n - 2 * k + 2)
 
@@ -91,8 +94,10 @@ class NPlayerChickenGame:
     def play_round_series(self, rounds):
         logging.info('Start round series')
 
-        for _ in range(max(0, rounds - 100)):
+        for i in range(max(0, rounds - 100)):
             self.play_round()
+            if i % 1000 == 0:
+                logging.info(f'{i} rounds played')
 
         for i in range(min(rounds, 100)):
             r = i
