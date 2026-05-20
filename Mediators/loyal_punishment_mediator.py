@@ -1,12 +1,25 @@
+from __future__ import annotations
+
+from typing import Optional
+
 from chicken_game import STAY, SWERVE
 import numpy as np
 import logging
 
-from .mediator_base import MediatorBase
+from Utils.statistics_collector import StatisticsCollector
+
+from Mediators.mediator_base import MediatorBase
 
 
 class LoyalPunishmentMediator(MediatorBase):
-    def __init__(self, num_players, k=2, threshold=0.5, discount=0.9):
+    def __init__(
+        self,
+        num_players,
+        k=2,
+        threshold=0.5,
+        discount=0.9,
+        statistics_collector: Optional[StatisticsCollector] = None,
+    ):
         """
         :param num_players: Number of players in the game
         :param k: Number of players recommended to STAY during punishment
@@ -17,6 +30,7 @@ class LoyalPunishmentMediator(MediatorBase):
         self.k = min(k, num_players)
         self.threshold = threshold
         self.discount = discount
+        self.statistics_collector = statistics_collector
 
         self.loyal_rating = 0.0
         self.mode = "SEQUENTIAL" # Options: "SEQUENTIAL", "PUNISHMENT"
@@ -77,11 +91,12 @@ class LoyalPunishmentMediator(MediatorBase):
         self.loyal_rating = (self.discount * self.loyal_rating) + \
                     ((1 - self.discount) * mean_deviation)
 
+        if self.statistics_collector is not None:
+            self.statistics_collector.record_loyal_rating(self.loyal_rating)
+
         # 3. Handle Mode Switching
         if self.mode == "SEQUENTIAL":
             if self.loyal_rating > self.threshold:
-                logging.info('Start punishing')
-                logging.info(f'Disloyalty rating: {self.loyal_rating:.5f}')
                 self.mode = "PUNISHMENT"
                 # Reset punishment pool logic
                 np.random.shuffle(self.punishment_pool)
@@ -89,8 +104,6 @@ class LoyalPunishmentMediator(MediatorBase):
         else:
             # Currently in punishment
             if self.loyal_rating <= self.threshold:
-                logging.info('Stop punishing')
-                logging.info(f'Disloyalty rating: {self.loyal_rating:.5f}')
                 self.mode = "SEQUENTIAL"
 
     def __str__(self):

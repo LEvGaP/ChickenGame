@@ -28,7 +28,8 @@ def save_players(players):
 
 
 def create_two_faced_mixer_players(n):
-    return [create_two_faced_mixer_with_mutual_policy(i)
+    return [TwoFacedPlayer(f'TwoFaced {i}', stay_face=create_mixer_player(i),
+                           swerve_face=create_mixer_player(i))
             for i in range(n)]
 
 
