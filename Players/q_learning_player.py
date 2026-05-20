@@ -42,7 +42,9 @@ class QLearningPlayer(BasePlayer):
         self.temperature *= factor
 
     def log_parameters(self):
-        logging.info(f"{self.name}: {self.q_values=}")
+        str_weights = ', '.join(str(round(w, 2)) for w in self.q_values)
+        logging.info(f"{self.name} | "
+                     f"Weights: [{str_weights}]")
 
 
 class EpsGreedyQLearningPlayer(BasePlayer):

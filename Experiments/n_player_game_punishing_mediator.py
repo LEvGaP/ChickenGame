@@ -2,6 +2,7 @@ from Utils.mixer_player_storage_manager import PlayersStorageManager
 from n_player_chicken_game import NPlayerChickenGame
 from Players.base_player import BasePlayer
 from Mediators.loyal_punishment_mediator import LoyalPunishmentMediator
+from Mediators.rational_mediator import RationalMediator
 from pathlib import Path
 
 
@@ -16,13 +17,13 @@ def run(num_players, k):
 
     players: list[BasePlayer] = trained_players
 
-    mediator = LoyalPunishmentMediator(num_players=num_players, k=k,
-                                       threshold=0.0033,
-                                       discount=0.9)
+    mediator = RationalMediator(num_players=num_players, k=k,
+                                threshold=0.0033,
+                                discount=0.9)
 
     game_controller = NPlayerChickenGame(players, mediator)
 
-    game_controller.play_round_series(20000)
+    # game_controller.play_round_series(20000)
 
     for i in range(4):
         game_controller.play_round_series(rounds=5000)

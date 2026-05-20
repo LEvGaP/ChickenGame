@@ -64,7 +64,13 @@ class MixerPlayer(BasePlayer):
 
     def log_parameters(self):
         """Print current weight vectors for all seen signals."""
-        logging.info(f"{self.name}: {self.weights=}")
+
+        str_weights = []
+        for w_list in self.weights:
+            str_weights.append(', '.join(str(round(w, 2)) for w in w_list))
+
+        logging.info(f"{self.name} | "
+                     f"Weights: [{str_weights[0]}] [{str_weights[1]}]")
         for p in self.players:
             p.log_parameters()
 

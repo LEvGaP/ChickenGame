@@ -33,21 +33,25 @@ def create_two_faced_mixer_players(n):
             for i in range(n)]
 
 
-def create_two_faced_mixer_with_mutual_policy(i):
-    mutual_policy = QLearningPlayer(f'QL mutual {i}', temperature=1)
+def create_two_faced_mixer_with_mutual_policy(i, scale=1):
+    mutual_policies = [
+        QLearningPlayer(f'QL mutual {j} {i}', temperature=1)
+        for j in range(scale)
+    ]
+
     player1 = MixerPlayer(
         f'Mixer 1 {i}',
         players=[
             QLearningPlayer(f'QL {j} {i}', temperature=1)
-            for j in range(2)
-        ] + [mutual_policy],
+            for j in range(2 * scale)
+        ] + mutual_policies,
         temperature=1)
     player2 = MixerPlayer(
         f'Mixer 2 {i}',
         players=[
                     QLearningPlayer(f'QL {j} {i}', temperature=1)
-                    for j in range(2)
-                ] + [mutual_policy],
+                    for j in range(2 * scale)
+                ] + mutual_policies,
         temperature=1)
 
     return TwoFacedPlayer(f'TwoFaced Mixer {i}',
