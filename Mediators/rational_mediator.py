@@ -1,12 +1,16 @@
 from chicken_game import STAY, SWERVE
 import numpy as np
 import logging
-from Mediators.mediator_base import MediatorBase
+from Mediators.mediator_base import MediatorBase, MediatorMode
+from Utils.statistics_collector import StatisticsCollector
+from Utils.softmax_distribution import softmax
 
 
 class RationalMediator(MediatorBase):
     def __init__(self, num_players, k=2, threshold=0.5, discount=0.9,
-                 stats_discount=0.8):
+                 stats_discount=0.8,
+                 stats_temperature=1.0,
+                 statistics_collector: StatisticsCollector = None):
         """
         :param num_players: Number of players in the game
         :param k: Number of players recommended to STAY during punishment
@@ -14,45 +18,42 @@ class RationalMediator(MediatorBase):
         :param discount: Factor for the global loyal rating (moving average)
         :param stats_discount: Factor for individual player stats (moving average)
         """
+        super().__init__()
+
         self.num_players = num_players
         self.k = min(k, num_players)
         self.threshold = threshold
         self.discount = discount
         self.stats_discount = stats_discount
+        self.stats_temperature = stats_temperature
+        self.statistics_collector = statistics_collector
 
         self.loyal_rating = 0.0
-        self.mode = "SEQUENTIAL"
 
         # Individual Statistics
-        # dev_stay_stats: Deviates when signal is STAY (they swerved instead)
-        self.dev_stay_stats = np.zeros(num_players)
-        # dev_swerve_stats: Deviates when signal is SWERVE (they stayed instead)
+        # follow_stay_stats: Follows recommendation when signal is STAY (they stayed as told)
+        self.follow_stay_stats = np.zeros(num_players)
+        # dev_swerve_stats: Deviates when signal is SWERVE (they stayed instead of swerving)
         self.dev_swerve_stats = np.zeros(num_players)
 
         self.last_recommendations = []
         logging.info(
             f'Mediator settings: {self.k=} | {self.threshold=} | {self.discount=} | {self.stats_discount=}')
 
-    def _softmax(self, x):
-        """Compute softmax values for a set of scores."""
-        e_x = np.exp(x)
-        return e_x / e_x.sum()
-
     def get_recommendations(self):
         recommendations = [SWERVE] * self.num_players
 
-        if self.mode == "SEQUENTIAL":
+        if self._mode == MediatorMode.ORDINARY:
             # Mode 1: Select ONE player to STAY.
-            # We reward loyalty: pick player with the LOWEST stay-deviation.
-            # Use negative stats so low values get high probability.
-            probs = self._softmax(-self.dev_stay_stats)
+            # Reward reliability: pick player with the HIGHEST follow_stay score.
+            probs = self.ord_mode_player_probs()
             stay_idx = np.random.choice(self.num_players, p=probs)
             recommendations[stay_idx] = STAY
 
         else:
             # Mode 2: Punishment. Select K players to STAY.
-            # We target "greedy" players: pick players with the HIGHEST swerve-deviation.
-            probs = self._softmax(self.dev_swerve_stats)
+            # Target "greedy" players: pick players with the HIGHEST swerve-deviation score.
+            probs = self.punish_mode_player_probs()
 
             # Select k unique players based on the distribution
             punished_indices = np.random.choice(
@@ -79,20 +80,19 @@ class RationalMediator(MediatorBase):
             act = player_actions[i]
 
             if rec == STAY:
-                # Signal was STAY. Deviation = player chose SWERVE
-                val = 1.0 if act == SWERVE else 0.0
-                self.dev_stay_stats[i] = (self.stats_discount *
-                                          self.dev_stay_stats[i]) + \
-                                         ((1 - self.stats_discount) * val)
-
+                # Signal was STAY. "Following" means they actually chose STAY.
+                val = 1.0 if act == STAY else 0.0
+                self.follow_stay_stats[i] = (self.stats_discount *
+                                             self.follow_stay_stats[i]) + \
+                                            ((1 - self.stats_discount) * val)
             elif rec == SWERVE:
-                # Signal was SWERVE. Deviation = player chose STAY
+                # Signal was SWERVE. "Deviation" means they chose STAY.
                 val = 1.0 if act == STAY else 0.0
                 self.dev_swerve_stats[i] = (self.stats_discount *
                                             self.dev_swerve_stats[i]) + \
                                            ((1 - self.stats_discount) * val)
 
-                # Global disloyalty logic: how many people ignored the "Safe" signal
+                # Global disloyalty: count people who ignored the SWERVE signal
                 if val == 1.0:
                     deviations_this_round += 1
 
@@ -101,18 +101,32 @@ class RationalMediator(MediatorBase):
         self.loyal_rating = (self.discount * self.loyal_rating) + \
                             ((1 - self.discount) * mean_deviation)
 
+        if self.statistics_collector is not None:
+            self.statistics_collector.record_mediator_stats(
+                self.loyal_rating,
+                mode=self._mode)
+
         # 2. Mode Switching Logic
-        if self.mode == "SEQUENTIAL":
+        if self._mode == MediatorMode.ORDINARY:
             if self.loyal_rating > self.threshold:
                 logging.info(
-                    f'Switch to PUNISHMENT. Rating: {self.loyal_rating:.5f}')
-                self.mode = "PUNISHMENT"
+                    f'Switch to {MediatorMode.PUNISHMENT}.'
+                    f' Rating: {self.loyal_rating:.5f}')
+                self._mode = MediatorMode.PUNISHMENT
         else:
             if self.loyal_rating <= self.threshold:
                 logging.info(
-                    f'Switch to SEQUENTIAL. Rating: {self.loyal_rating:.5f}')
-                self.mode = "SEQUENTIAL"
+                    f'Switch to {MediatorMode.ORDINARY}.'
+                    f' Rating: {self.loyal_rating:.5f}')
+                self._mode = MediatorMode.ORDINARY
 
     def __str__(self):
-        return (f"Mode: {self.mode} | Rating: {self.loyal_rating:.4f} | "
-                f"Avg Swerve Dev: {np.mean(self.dev_swerve_stats):.4f}")
+        return (
+            f"Mode: {self._mode} | Global Rating: {self.loyal_rating:.4f} | "
+            f"Avg Follow-Stay: {np.mean(self.follow_stay_stats):.4f}")
+
+    def ord_mode_player_probs(self):
+        return softmax(-self.follow_stay_stats / self.stats_temperature)
+
+    def punish_mode_player_probs(self):
+        return softmax(self.dev_swerve_stats / self.stats_temperature)

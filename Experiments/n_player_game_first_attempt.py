@@ -1,4 +1,4 @@
-from Utils.mixer_player_storage_manager import PlayersStorageManager
+from Utils.players_storage_manager import PlayersStorageManager
 from Mediators.mediators import SequenceMediator
 from pathlib import Path
 from n_player_chicken_game import NPlayerChickenGame

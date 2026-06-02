@@ -8,7 +8,7 @@ import logging
 
 from Utils.statistics_collector import StatisticsCollector
 
-from Mediators.mediator_base import MediatorBase
+from Mediators.mediator_base import MediatorBase, MediatorMode
 
 
 class LoyalPunishmentMediator(MediatorBase):
@@ -26,6 +26,7 @@ class LoyalPunishmentMediator(MediatorBase):
         :param threshold: Rating value that triggers/stops punishment
         :param discount: Factor for the moving average (0 to 1)
         """
+        super().__init__()
         self.num_players = num_players
         self.k = min(k, num_players)
         self.threshold = threshold
@@ -33,7 +34,6 @@ class LoyalPunishmentMediator(MediatorBase):
         self.statistics_collector = statistics_collector
 
         self.loyal_rating = 0.0
-        self.mode = "SEQUENTIAL" # Options: "SEQUENTIAL", "PUNISHMENT"
 
         # State for Sequential Mode
         self.stay_index = num_players - 1
@@ -50,7 +50,7 @@ class LoyalPunishmentMediator(MediatorBase):
     def get_recommendations(self):
         recommendations = [SWERVE] * self.num_players
 
-        if self.mode == "SEQUENTIAL":
+        if self.mode == MediatorMode.ORDINARY:
             # Mode 1: Sequential single STAY
             self.stay_index = (self.stay_index + 1) % self.num_players
             recommendations[self.stay_index] = STAY
@@ -92,19 +92,20 @@ class LoyalPunishmentMediator(MediatorBase):
                     ((1 - self.discount) * mean_deviation)
 
         if self.statistics_collector is not None:
-            self.statistics_collector.record_loyal_rating(self.loyal_rating)
+            self.statistics_collector.record_mediator_stats(
+                self.loyal_rating, mode=self._mode)
 
         # 3. Handle Mode Switching
-        if self.mode == "SEQUENTIAL":
+        if self.mode == MediatorMode.ORDINARY:
             if self.loyal_rating > self.threshold:
-                self.mode = "PUNISHMENT"
+                self._mode = MediatorMode.PUNISHMENT
                 # Reset punishment pool logic
                 np.random.shuffle(self.punishment_pool)
                 self.pool_pointer = 0
         else:
             # Currently in punishment
             if self.loyal_rating <= self.threshold:
-                self.mode = "SEQUENTIAL"
+                self._mode = MediatorMode.ORDINARY
 
     def __str__(self):
         return f"Mode: {self.mode} | Rating: {self.loyal_rating:.5f}"

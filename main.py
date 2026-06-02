@@ -2,11 +2,7 @@ import logging
 from datetime import datetime
 from pathlib import Path
 
-import Experiments.academy_dev
-import Experiments.n_player_game_first_attempt
-import Experiments.n_player_game_punishing_mediator
-import Experiments.n_player_game_debug
-import Experiments.n_player_visualization
+import Experiments.n_game_untrained_players
 
 
 log_filename = f"experiment_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
@@ -17,7 +13,4 @@ logging.basicConfig(
 )
 
 if __name__ == "__main__":
-    # Experiments.academy_dev.run(players_num=265)
-    Experiments.n_player_game_punishing_mediator.run(num_players=256, k=12)
-    # Experiments.n_player_game_debug.run()
-    # Experiments.n_player_visualization.run(n_players=256, k=12)
+    Experiments.n_game_untrained_players.run(n_players=256, k=8)

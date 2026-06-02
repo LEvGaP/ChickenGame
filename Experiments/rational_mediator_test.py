@@ -1,13 +1,15 @@
+import logging
+
 from Utils.players_storage_manager import PlayersStorageManager
 from Utils.statistics_collector import StatisticsCollector
 from pathlib import Path
-from Visualization.game_history_grid import GameHistoryGridView
 from Visualization.statistics_view import StatisticsView
 from Mediators.rational_mediator import RationalMediator
 from n_player_chicken_game import NPlayerChickenGame
 
-STORE_PATH = Path('PlayersStorage', 'TwoFacedMixer25000')
-SAVE_PATH = Path('PlayersStorage', 'TwoFacedMixer40000')
+STORE_PATH = Path('PlayersStorage', 'TwoFacedMixerPlayers')
+# SAVE_PATH = Path('PlayersStorage', 'TwoFacedMixerPlayers25000')
+SAVE_PATH = None
 
 
 def run(n_players, k):
@@ -25,6 +27,8 @@ def run(n_players, k):
         k=k,
         threshold=threshold,
         discount=0.9,
+        stats_discount=0.9,
+        stats_temperature=0.5,
         statistics_collector=statistics,
     )
 
@@ -32,17 +36,17 @@ def run(n_players, k):
         players, mediator, statistics_collector=statistics,
     )
 
+    stats_view = StatisticsView(collector=statistics, threshold=threshold)
 
-    view = GameHistoryGridView(n_players)
-    for i in range(10):
-        actions, payoffs, recs = game_controller.play_round()
-        view.append_round(actions, recs)
+    # game_controller.play_round_series(25000)
+    for i in range(3):
+        game_controller.play_round_series(5000)
+        stats_view.show_mediator_stats(mediator.ord_mode_player_probs(),
+                                       mediator.punish_mode_player_probs())
 
-    view.pump()
-    view.run_mainloop()
+    if SAVE_PATH is not None:
+        storage_manager = PlayersStorageManager(store_path=SAVE_PATH,
+                                                clear=True)
+        storage_manager.dump_batch(players)
 
-    # if SAVE_PATH:
-    #     storage_manager = PlayersStorageManager(store_path=SAVE_PATH)
-    #     storage_manager.dump_batch(players)
-    #
-    # StatisticsView(statistics, threshold=threshold).show()
+    stats_view.show()

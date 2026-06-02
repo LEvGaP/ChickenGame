@@ -2,7 +2,7 @@ from academy import Academy, PlayerRank
 from Players.mixer_player import MixerPlayer
 from Players.q_learning_player import QLearningPlayer, EpsGreedyQLearningPlayer
 from Players.two_faced_player import TwoFacedPlayer
-from Utils.mixer_player_storage_manager import PlayersStorageManager
+from Utils.players_storage_manager import PlayersStorageManager
 from pathlib import Path
 
 

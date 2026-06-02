@@ -14,7 +14,7 @@ class QLearningPlayer(BasePlayer):
         self.learning_rate = learning_rate
         self.temperature = temperature  # Controls exploration (higher = more random)
         # Initialize internal values (Q-values) for each action
-        self.q_values = rng.uniform(0, 25, size=2)
+        self.q_values = rng.uniform(-3, 3, size=2)
         self.last_action = None
 
     def get_action(self, recommendation=0):
@@ -44,7 +44,8 @@ class QLearningPlayer(BasePlayer):
     def log_parameters(self):
         str_weights = ', '.join(str(round(w, 2)) for w in self.q_values)
         logging.info(f"{self.name} | "
-                     f"Weights: [{str_weights}]")
+                     f"Weights: [{str_weights}] | "
+                     f"T: {self.temperature}")
 
 
 class EpsGreedyQLearningPlayer(BasePlayer):
