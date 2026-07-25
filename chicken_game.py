@@ -17,10 +17,10 @@ class ChickenGame:
         self.p1 = player1
         self.p2 = player2
         self.matrix = {
-            (SWERVE, SWERVE): (10, 10),
-            (SWERVE, STAY):   (5, 25),
-            (STAY, SWERVE):   (25, 5),
-            (STAY, STAY):     (0, 0)
+            (SWERVE, SWERVE): (-1, -1),
+            (SWERVE, STAY):   (-1, 7),
+            (STAY, SWERVE):   (7, -1),
+            (STAY, STAY):     (-5, -5)
         }
         self.mediator = mediator
         self.p1_history: list[RoundHistory] = []

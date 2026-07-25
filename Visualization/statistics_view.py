@@ -23,7 +23,7 @@ class StatisticsView:
         self._threshold = threshold
         self._title = title
 
-    def show(self, save_file=None) -> None:
+    def show(self, save_file=None, show=False) -> None:
         ratings = self._collector.loyal_ratings
         if not ratings:
             raise ValueError("no loyal rating samples recorded")
@@ -47,7 +47,9 @@ class StatisticsView:
         if save_file is not None:
             plt.savefig(save_file)
 
-        plt.show()
+        if show:
+            plt.show()
+        plt.close()
 
     def _plot_loyal_rating(
             self,
@@ -127,13 +129,16 @@ class StatisticsView:
 
     @staticmethod
     def show_mediator_stats(seq_mode_player_probs: np.ndarray,
-                            punish_mode_player_probs: np.ndarray):
+                            punish_mode_player_probs: np.ndarray,
+                            title: str,
+                            save_file=None,
+                            show=False):
         fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(10, 10))
 
         def plot_distribution(ax, player_probs, title):
             ax.hist(player_probs, bins='auto')
             ax.set_title(title)
-            ax.set_xlabel('Probs')
+            ax.set_xlabel('Value')
             ax.set_ylabel('Frequency')
 
         plot_distribution(axes[0], seq_mode_player_probs,
@@ -141,6 +146,12 @@ class StatisticsView:
         plot_distribution(axes[1], punish_mode_player_probs,
                           'Punishment mode probs distribution')
 
-        fig.suptitle("Player probabilities for mediator")
+        fig.suptitle(title)
         plt.tight_layout()
-        plt.show()
+
+        if save_file is not None:
+            plt.savefig(save_file)
+
+        if show:
+            plt.show()
+        plt.close()

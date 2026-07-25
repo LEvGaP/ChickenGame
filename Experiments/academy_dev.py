@@ -6,6 +6,9 @@ from Utils.players_storage_manager import PlayersStorageManager
 from pathlib import Path
 
 
+STORE_PATH = Path('PlayersStorage', 'TwoFacedMixerPlayers')
+
+
 def run(players_num=8):
     players = create_two_faced_mixer_players(players_num)
 
@@ -22,7 +25,7 @@ def run(players_num=8):
 def save_players(players):
 
     storage_manager = PlayersStorageManager(
-        store_path=Path('PlayersStorage', 'TwoFacedMixerPlayers'),
+        store_path=STORE_PATH,
         clear=True)
     storage_manager.dump_batch(players)
 

@@ -17,7 +17,7 @@ class RoundHistory:
     recommendation: int
 
 
-def get_compute_payoffs(cooperate_payoff = 0):
+def get_compute_payoffs(cooperate_payoff=0):
     def compute_payoffs(actions: List[int]) -> List[float]:
         """
         Compute payoffs for an n-player chicken game.
@@ -85,7 +85,7 @@ class NPlayerChickenGame:
                              if recommendations[i] == STAY)
         if self.statistics_collector is not None:
             self.statistics_collector.record_round_stats(
-                avg_payoff=sum(payoffs) / self.n,
+                payoffs=payoffs,
                 deviate_count=deviated,
                 dev_stay_count=dev_stay_count
             )
@@ -94,6 +94,11 @@ class NPlayerChickenGame:
                          f' | Min payoff: {min(payoffs):.4f}\n'
                          f'Number of deviated: {deviated}'
                          )
+            if deviated == 1:
+                dev_player_idx = next((i for i in range(self.n)
+                                       if actions[i] != recommendations[i]))
+                player = self.players[dev_player_idx]
+                player.log_parameters()
 
         return actions, payoffs, recommendations
 

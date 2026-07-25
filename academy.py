@@ -23,7 +23,7 @@ class Academy:
             list)
         self.student_groups[PlayerRank.CHICKEN] = students
         self.mediator = SequenceMediator(num_players=2)
-        self.evaluator = Evaluator(discount=0.99, rounds=100, gingerbread=25,
+        self.evaluator = Evaluator(discount=0.99, rounds=100, gingerbread=7,
                                    eps=0.1)
         self.max_iterations = max_iterations
 
