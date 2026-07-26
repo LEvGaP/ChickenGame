@@ -1,4 +1,4 @@
-from academy import Academy, PlayerRank
+from Academy.academy import Academy, PlayerRank
 from Players.mixer_player import MixerPlayer
 from Players.q_learning_player import QLearningPlayer, EpsGreedyQLearningPlayer
 from Players.two_faced_player import TwoFacedPlayer

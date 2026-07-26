@@ -1,8 +1,7 @@
 from Utils.players_storage_manager import PlayersStorageManager
-from n_player_chicken_game import NPlayerChickenGame, get_compute_payoffs
+from GameControllers.n_player_chicken_game import NPlayerChickenGame, get_compute_payoffs
 from Players.base_player import BasePlayer
 from Mediators.loyal_punishment_mediator import LoyalPunishmentMediator
-from Mediators.rational_mediator import RationalMediator
 from pathlib import Path
 from Utils.statistics_collector import StatisticsCollector
 from Visualization import StatisticsView

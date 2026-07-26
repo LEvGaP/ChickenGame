@@ -1,5 +1,5 @@
 from Players.base_player import BasePlayer
-from chicken_game import STAY
+from GameControllers.chicken_game import STAY
 import logging
 
 

@@ -12,7 +12,7 @@ import tkinter as tk
 from tkinter import ttk
 from typing import List, Sequence, Tuple
 
-from n_player_chicken_game import STAY, SWERVE
+from GameControllers.n_player_chicken_game import STAY, SWERVE
 
 # (action, recommendation_equal) -> fill when action is SWERVE or STAY
 _COLOR_SWERVE_FOLLOW = "#0000FF"

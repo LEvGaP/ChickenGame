@@ -2,9 +2,8 @@ from Utils.players_storage_manager import PlayersStorageManager
 from Utils.statistics_collector import StatisticsCollector
 from pathlib import Path
 from Visualization.game_history_grid import GameHistoryGridView
-from Visualization.statistics_view import StatisticsView
 from Mediators.rational_mediator import RationalMediator
-from n_player_chicken_game import NPlayerChickenGame
+from GameControllers.n_player_chicken_game import NPlayerChickenGame
 
 STORE_PATH = Path('PlayersStorage', 'TwoFacedMixer25000')
 SAVE_PATH = Path('PlayersStorage', 'TwoFacedMixer40000')

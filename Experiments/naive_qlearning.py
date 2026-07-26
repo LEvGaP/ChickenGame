@@ -1,6 +1,6 @@
 from Players.q_learning_player import QLearningPlayerV2
 from Mediators.mediators import RandomMediatorV2
-from chicken_game import ChickenGame
+from GameControllers.chicken_game import ChickenGame
 
 
 def play_game(total_rounds):

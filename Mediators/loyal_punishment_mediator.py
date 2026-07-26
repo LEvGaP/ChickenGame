@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Optional
 
-from chicken_game import STAY, SWERVE
+from GameControllers.chicken_game import STAY, SWERVE
 import numpy as np
 import logging
 

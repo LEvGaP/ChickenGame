@@ -4,7 +4,7 @@ from Players.players_factory import create_two_faced_mixer_players
 from Utils.statistics_collector import StatisticsCollector
 from Utils.players_storage_manager import PlayersStorageManager
 from Mediators.rational_mediator import RationalMediator
-from n_player_chicken_game import NPlayerChickenGame, get_compute_payoffs
+from GameControllers.n_player_chicken_game import NPlayerChickenGame, get_compute_payoffs
 from Visualization import StatisticsView
 from pathlib import Path
 

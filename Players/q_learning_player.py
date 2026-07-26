@@ -1,5 +1,5 @@
 from Players.base_player import BasePlayer
-from chicken_game import SWERVE, STAY, ACTIONS
+from GameControllers.chicken_game import SWERVE, STAY, ACTIONS
 import numpy as np
 import random
 import logging

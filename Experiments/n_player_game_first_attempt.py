@@ -1,7 +1,7 @@
 from Utils.players_storage_manager import PlayersStorageManager
 from Mediators.mediators import SequenceMediator
 from pathlib import Path
-from n_player_chicken_game import NPlayerChickenGame
+from GameControllers.n_player_chicken_game import NPlayerChickenGame
 
 
 def run():

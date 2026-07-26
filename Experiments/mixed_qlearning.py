@@ -1,4 +1,4 @@
-from chicken_game import ChickenGame
+from GameControllers.chicken_game import ChickenGame
 from Players.q_learning_player import QLearningPlayer
 from Players.mixer_player import MixerPlayer
 from Mediators.mediators import RandomMediatorV2

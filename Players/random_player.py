@@ -1,5 +1,5 @@
 from Players.base_player import BasePlayer
-from chicken_game import ACTIONS
+from GameControllers.chicken_game import ACTIONS
 import random
 
 
